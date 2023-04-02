@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { CreateUserDto } from 'src/user/dto/create.user.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 
 import * as bcrypt from 'bcryptjs';
@@ -26,7 +26,7 @@ export class AuthService {
     }
 
     private async generateToken(user: User) {
-        const payload = {email: user.email, id: user.id}
+        const payload = {email: user.email, id: user.id, roles: user.roles}
         return {
             token: this.jwtService.sign(payload) 
         }

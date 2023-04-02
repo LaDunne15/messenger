@@ -1,4 +1,7 @@
-import { Column, DataType, Table, Model} from "sequelize-typescript";
+import { Post } from "@nestjs/common";
+import { Column, DataType, Table, Model, BelongsToMany, HasMany} from "sequelize-typescript";
+import { Role } from "src/roles/roles.model";
+import { UserRoles } from "src/roles/user-roles.model";
 
 interface UserCreationAttrs {
     email: string;
@@ -25,5 +28,8 @@ export class User extends Model<User, UserCreationAttrs>{
 
     @Column({type:DataType.STRING, allowNull:false})
     password:string;
+
+    @BelongsToMany(()=>Role,()=>UserRoles)
+    roles: Role[];
 
 }

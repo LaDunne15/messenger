@@ -14,6 +14,10 @@ import { JwtModule } from '@nestjs/jwt';
         expiresIn: '24h'
       }
     })
+  ],
+  exports:[
+    AuthService,
+    JwtModule
   ]
 })
 export class AuthModule {}
