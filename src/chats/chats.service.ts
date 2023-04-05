@@ -13,6 +13,7 @@ export class ChatsService {
     constructor(
         @InjectModel(Chat) private readonly chatRepository: typeof Chat,
         @InjectModel(User) private readonly userRepository: typeof User,
+        @InjectModel(Msg) private readonly msgRepository: typeof Msg,
         @InjectModel(UserChats) private readonly userChatsRepository: typeof UserChats,
         private jwtService: JwtService
     ){}
@@ -54,7 +55,14 @@ export class ChatsService {
         const token = authHeader.split(' ')[1];
         const jwt_user = this.jwtService.verify(token);
 
-        const chat = await Chat.findByPk(chatId, { include: [Msg] });
+        const chat = await Chat.findByPk(chatId, { include: [{
+            model:Msg,
+            include:[
+                {
+                    model:User
+                }
+            ]
+        }], });
 
         return chat;
     }

@@ -15,22 +15,23 @@ export class Msg extends Model<Msg, MsgCreationAttrs>{
     @Column({type: DataType.INTEGER, unique:true, autoIncrement:true, primaryKey: true})
     id:number;
 
-    @Column({type: DataType.INTEGER})
-    chat_id:number;
-
-    @Column({type: DataType.INTEGER})
-    user_id:number;
-
-    @Column({type: DataType.STRING})
-    text:string;
-
-    @Column({type: DataType.INTEGER})
-    reply:number;
-
     @ForeignKey(() => Chat)
-    @Column({ type:DataType.INTEGER })
+    @Column({ type:DataType.INTEGER, field: 'chat_id' })
     chatId: number;
 
     @BelongsTo(() => Chat, { foreignKey: 'chatId', as: 'fromChat' })
     chat: Chat;
+
+    @ForeignKey(()=>User)
+    @Column({type: DataType.INTEGER, field: 'user_id'})
+    userId:number;
+
+    @BelongsTo(() => User)
+    user: User;
+
+    @Column({type: DataType.STRING, field: 'text'})
+    text:string;
+
+    @Column({type: DataType.INTEGER, field: 'reply'})
+    reply:number;
 }

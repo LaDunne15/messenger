@@ -23,10 +23,12 @@ export class MsgService {
         const token = authHeader.split(' ')[1];
         const jwt_user = this.jwtService.verify(token);
 
-        const msg = await this.msgRepository.create(dto); 
-        //msg.$set("user_id",jwt_user.id);
-        msg.user_id = jwt_user.id;
-
-        return msg.save();
+        const msg = this.msgRepository.create({
+            ...dto,
+            user_id: jwt_user.id,
+        });
+        
+          // Зберігаємо новий об'єкт повідомлення в базі даних
+        return msg;
     }
 }
