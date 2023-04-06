@@ -2,6 +2,7 @@ import { Post } from "@nestjs/common";
 import { Column, DataType, Table, Model, BelongsToMany, HasMany} from "sequelize-typescript";
 import { Chat } from "src/chats/chats.model";
 import { UserChats } from "src/chats/user-chat.model";
+import { File } from "src/files/file.model";
 import { Msg } from "src/msg/msg.model";
 import { Role } from "src/roles/roles.model";
 import { UserRoles } from "src/roles/user-roles.model";
@@ -41,4 +42,6 @@ export class User extends Model<User, UserCreationAttrs>{
     @HasMany(() => Msg)
     msgs: Msg[];
 
+    @HasMany(() => File)
+    imgs: File[];
 }

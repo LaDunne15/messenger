@@ -12,6 +12,8 @@ import { Chat } from './chats/chats.model';
 import { UserChats } from './chats/user-chat.model';
 import { MsgModule } from './msg/msg.module';
 import { Msg } from './msg/msg.model';
+import { FilesModule } from './files/files.module';
+import { File } from './files/file.model';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { Msg } from './msg/msg.model';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User,Role,UserRoles,Chat,UserChats,Msg],
+      models: [User,Role,UserRoles,Chat,UserChats,Msg,File],
       autoLoadModels: true,
       protocol: 'postgres',
       dialectOptions: {
@@ -37,7 +39,8 @@ import { Msg } from './msg/msg.model';
     AuthModule,
     RolesModule,
     ChatsModule,
-    MsgModule
+    MsgModule,
+    FilesModule
   ],
   controllers: [],
   providers: [],
