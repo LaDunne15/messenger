@@ -6,6 +6,7 @@ import { User } from 'src/user/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { UserChats } from './user-chat.model';
 import { Msg } from 'src/msg/msg.model';
+import { ImgMsg } from 'src/msg/img-msg.model';
 
 @Injectable()
 export class ChatsService {
@@ -60,10 +61,23 @@ export class ChatsService {
             include:[
                 {
                     model:User
+                },
+                {
+                    model:ImgMsg
                 }
             ]
-        }], });
+            }],
+        });
 
-        return chat;
+        const chat2 = chat.messages.sort(function(a, b) {
+            return a.updatedAt-b.updatedAt;
+        });
+
+        
+
+        const chat3 = chat;
+        chat3.messages = chat2;
+
+        return chat3;
     }
 }

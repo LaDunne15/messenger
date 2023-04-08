@@ -17,12 +17,12 @@ export class UserController {
 
     
     @ApiOperation({summary: 'Створення користувача(неправильний)'})
-    @Roles("ADMIN")
-    @UseGuards(RolesGuard)
+    //@Roles("ADMIN")
+    //@UseGuards(RolesGuard)
     @Post()
     createUser(@Body() dto: CreateUserDto){
         return this.userService.createUser(dto);
-    }
+    } 
 
     @ApiBearerAuth()
     @ApiOperation({summary: 'Отримати всіх користувачів'})
@@ -73,6 +73,7 @@ export class UserController {
     getMyAccount(@Headers() headers) {
       return this.userService.getMyAccount(headers);
     }
+    
     @ApiBearerAuth()
     @ApiOperation({summary:'Взяти зображення по параметру key'})
     //@UseGuards(JwtAuthGuard)

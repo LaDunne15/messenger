@@ -60,7 +60,6 @@ export class UserService {
         return post;
 
     }
-
     
     async getMyAccount(headers: any) {
         const authHeader = headers.authorization;
@@ -71,8 +70,6 @@ export class UserService {
         }], });
         return user;
     }
-
-
     
     async getImageURLByKey(value: string){
         return this.fileService.getFileURLByKey(value);

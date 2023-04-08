@@ -1,7 +1,16 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsString } from "class-validator";
+import { IsArray, IsNumber, IsString, ValidateNested } from "class-validator";
+import { Type } from 'class-transformer';
 
-export class SendMessageDto {
+class FileStorageObjectDto {
+    @ApiProperty({ type: 'string', format: 'binary', required: true })
+    file: Express.Multer.File;
+  
+    @ApiProperty({ required: false })
+    comment?: string;
+}
+
+export class SendMessageFilesDto {
     @ApiProperty({example:1, description:"Ідентифікатор чату"})
     @IsNumber({},{message: 'Повинно бути число'})
     readonly chatId:number;
@@ -13,4 +22,11 @@ export class SendMessageDto {
     @ApiProperty({example:null, description:"ідентифікатор повідомлення"})
     @IsNumber({},{message: 'Повинно бути число'})
     readonly reply:number;
+    
+    @ApiProperty({ type: [FileStorageObjectDto], required: true })
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => FileStorageObjectDto)
+    files: FileStorageObjectDto[];
+
 }

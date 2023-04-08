@@ -2,10 +2,11 @@ import { Column, DataType, Table, Model, BelongsToMany, HasMany, ForeignKey, Bel
 import { Chat } from "src/chats/chats.model";
 import { Role } from "src/roles/roles.model";
 import { User } from "src/user/user.model";
+import { ImgMsg } from "./img-msg.model";
 
 interface MsgCreationAttrs {
-    chat_id:number;
-    user_id:number;
+    chatId:number;
+    userId:number;
     text:string;
 }
 
@@ -16,14 +17,14 @@ export class Msg extends Model<Msg, MsgCreationAttrs>{
     id:number;
 
     @ForeignKey(() => Chat)
-    @Column({ type:DataType.INTEGER, field: 'chat_id' })
+    @Column({ type:DataType.INTEGER, field: 'chatId' })
     chatId: number;
 
     @BelongsTo(() => Chat, { foreignKey: 'chatId', as: 'fromChat' })
     chat: Chat;
 
     @ForeignKey(()=>User)
-    @Column({type: DataType.INTEGER, field: 'user_id'})
+    @Column({type: DataType.INTEGER, field: 'userId'})
     userId:number;
 
     @BelongsTo(() => User)
@@ -34,4 +35,7 @@ export class Msg extends Model<Msg, MsgCreationAttrs>{
 
     @Column({type: DataType.INTEGER, field: 'reply'})
     reply:number;
+
+    @HasMany(()=>ImgMsg, { as: 'img_messages' })
+    messages: ImgMsg[];
 }

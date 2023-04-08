@@ -24,7 +24,7 @@ export class Chat extends Model<Chat, ChatCreationAttrs>{
     name:string;
 
     @Column({type: DataType.ENUM(...Object.values(Type)), defaultValue: Type.IND})
-    type!:Type;
+    type!:Type;  
 
     @BelongsToMany(()=>User,()=>UserChats)
     users: User[]; 

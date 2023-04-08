@@ -6,6 +6,8 @@ import { UserChats } from 'src/chats/user-chat.model';
 import { User } from 'src/user/user.model';
 import { SendMessageDto } from './dto/send-msg.dto';
 import { Msg } from './msg.model';
+import { FilesService } from 'src/files/files.service';
+import { ImgMsg } from './img-msg.model';
 
 @Injectable()
 export class MsgService {
@@ -13,7 +15,9 @@ export class MsgService {
         @InjectModel(Chat) private readonly chatRepository: typeof Chat,
         @InjectModel(User) private readonly userRepository: typeof User,
         @InjectModel(Msg) private readonly msgRepository: typeof Msg,
+        @InjectModel(ImgMsg) private readonly imgMsgRepository: typeof ImgMsg,
         @InjectModel(UserChats) private readonly userChatsRepository: typeof UserChats,
+        private fileService: FilesService,
         private jwtService: JwtService
     ){}
 
@@ -23,12 +27,33 @@ export class MsgService {
         const token = authHeader.split(' ')[1];
         const jwt_user = this.jwtService.verify(token);
 
-        const msg = this.msgRepository.create({
+        const msg = await this.msgRepository.create({
             ...dto,
-            user_id: jwt_user.id,
+            userId: jwt_user.id,
         });
         
-          // Зберігаємо новий об'єкт повідомлення в базі даних
+        // Зберігаємо новий об'єкт повідомлення в базі даних
+        return msg;
+    }
+
+    async sendMsgWithFiles(dto,headers,files){
+        const authHeader = headers.authorization;
+        const token = authHeader.split(' ')[1];
+        const jwt_user = this.jwtService.verify(token);
+
+        console.log(dto);
+
+        const msg = await this.msgRepository.create({
+            userId: jwt_user.id,
+            chatId: dto.chatId,
+            text: dto.text
+        });
+        
+        for (const file of files) {
+            const fileName = await this.fileService.createFile(file);
+            const imgMsg = await this.imgMsgRepository.create({ url: fileName, msgId: msg.id });
+        }
+
         return msg;
     }
 }

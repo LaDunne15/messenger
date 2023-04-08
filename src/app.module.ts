@@ -14,6 +14,7 @@ import { MsgModule } from './msg/msg.module';
 import { Msg } from './msg/msg.model';
 import { FilesModule } from './files/files.module';
 import { File } from './files/file.model';
+import { ImgMsg } from './msg/img-msg.model';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { File } from './files/file.model';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
-      models: [User,Role,UserRoles,Chat,UserChats,Msg,File],
+      models: [User,Role,UserRoles,Chat,UserChats,Msg,File,ImgMsg],
       autoLoadModels: true,
       protocol: 'postgres',
       dialectOptions: {
