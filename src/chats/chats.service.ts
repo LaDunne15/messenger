@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserChats } from './user-chat.model';
 import { Msg } from 'src/msg/msg.model';
 import { ImgMsg } from 'src/msg/img-msg.model';
+import { CreateGroupChatDto } from './dto/create-group-chat.dto';
 
 @Injectable()
 export class ChatsService {
@@ -33,6 +34,23 @@ export class ChatsService {
 
         await chat.$add("users",[user.id])
         await chat.$add("users",[user2.id])
+        return chat;
+    }
+
+    
+    async createGroupChat(dto, headers: any) {
+        const authHeader = headers.authorization;
+        const token = authHeader.split(' ')[1];
+
+        const jwt_user = this.jwtService.verify(token);
+        
+        const chat = await this.chatRepository.create({name:dto.name,type:'gr'});
+        await chat.$add("users",[jwt_user.id]);
+
+        for(const id of dto.usersIds) {
+            await chat.$add("users",[id]);
+        }
+        
         return chat;
     }
 

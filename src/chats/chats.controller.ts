@@ -4,6 +4,7 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { Headers } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { CreateGroupChatDto } from './dto/create-group-chat.dto';
 
 @ApiTags("Чати")
 @Controller('chats')
@@ -17,6 +18,15 @@ export class ChatsController {
     createIndChat(@Headers() headers,@Body() dto: CreateChatDto) {
         return this.chatService.createChat(dto,headers);
     }
+
+    @ApiBearerAuth()
+    @ApiOperation({summary:"Створення групового чату"})
+    @UseGuards(JwtAuthGuard)
+    @Post('/group')
+    createGrChat(@Headers() headers,@Body() dto: CreateGroupChatDto) {
+        return this.chatService.createGroupChat(dto,headers);
+    }
+
 
     @ApiBearerAuth()
     @ApiOperation({summary:"Виведення списку всіх чатів"})
