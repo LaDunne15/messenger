@@ -12,7 +12,7 @@ export class AuthService {
     async registration(userDto: CreateUserDto){
         const candidate = await this.userService.getUserByEmail(userDto.email);
         if(candidate){
-            throw new HttpException('Користувач з таким email вже існує',HttpStatus.BAD_REQUEST);
+            throw new HttpException('Користувач з таким email вже існує',HttpStatus.CONFLICT);
         }
         const hashPassword = await bcrypt.hash(userDto.password,5);
         const user = await this.userService.createUser({...userDto, password: hashPassword});
@@ -33,11 +33,14 @@ export class AuthService {
     }
 
     private async validateUser(userDto: CreateUserDto) {
-        const user = await this.userService.getUserByEmail(userDto.email)
-        const passwordEquals = await bcrypt.compare(userDto.password, user.password);
-        if(user && passwordEquals) {
-            return user;
+        const user = await this.userService.getUserByEmail(userDto.email);
+        if(!user){
+            throw new HttpException('Користувач не знайдений',HttpStatus.NOT_FOUND);
         }
-        throw new UnauthorizedException({message: 'Некоректна пошта чи пароль'});
+        const passwordEquals = await bcrypt.compare(userDto.password, user.password);
+        if(!passwordEquals) {
+            throw new HttpException('Некоректний пароль',HttpStatus.UNAUTHORIZED);
+        }
+        return user;
     }
 }
