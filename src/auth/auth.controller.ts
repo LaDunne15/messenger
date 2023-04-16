@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Headers } from '@nestjs/common';
 @ApiTags("Реєстрація/Авторизація")
 @Controller('auth')
 export class AuthController {
@@ -20,5 +20,13 @@ export class AuthController {
     login(@Body() dto: CreateUserDto){
         return this.authService.login(dto);
     }
+
+    @ApiBearerAuth()
+    @ApiOperation({summary:'Перевидача JWT токену'})
+    @Post('/refreshJWT')
+    refreshJWT(@Headers() headers){
+        return this.authService.refreshJWT(headers);
+    }
+
 
 }

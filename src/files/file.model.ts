@@ -27,7 +27,4 @@ export class File extends Model<File, FileCreationAttrs>{
 
     @Column({type: DataType.STRING})
     url:string;
-
-    @Column({type: DataType.BOOLEAN, defaultValue: false})
-    isActual:boolean;
 }

@@ -25,6 +25,15 @@ export class AuthService {
         return this.generateToken(user);
     }
 
+    
+    async refreshJWT(headers) {
+        const authHeader = headers.authorization;
+        const token = authHeader.split(' ')[1];
+        const jwt_user = await this.jwtService.verifyAsync(token, { ignoreExpiration: true });
+        const user = await this.userService.getUserByEmail(jwt_user.email);
+        return this.generateToken(user);
+    }
+
     private async generateToken(user: User) {
         const payload = {email: user.email, id: user.id, roles: user.roles}
         return {

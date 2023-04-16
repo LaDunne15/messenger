@@ -56,18 +56,22 @@ export class UserService {
         const jwt_user = this.jwtService.verify(token);
 
         const fileName = await this.fileService.createFile(image);
-        const post = await this.fileRepository.create({...dto, url: fileName,userId:jwt_user.id});
-        return post;
-
+        const file = await this.fileRepository.create({...dto, url: fileName,userId:jwt_user.id});
+        const user = await this.userRepository.findByPk(jwt_user.id);
+        user.url_img=fileName;
+        await user.save();
+        return file;
     }
     
     async getMyAccount(headers: any) {
         const authHeader = headers.authorization;
         const token = authHeader.split(' ')[1];
         const jwt_user = this.jwtService.verify(token);
-        const user = await this.userRepository.findByPk(jwt_user.id, { include: [{
+        /*const user = await this.userRepository.findByPk(jwt_user.id, { include: [{
             model:File,
-        }], });
+        }], });*/
+        const user = await this.userRepository.findByPk(jwt_user.id);
+        user.url_img = await this.fileService.getFileURLByKey(user.url_img);
         return user;
     }
     

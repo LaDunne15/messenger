@@ -32,11 +32,6 @@ export class FilesService {
     }
 
     async getFileURLByKey(image: string){
-        const params = {
-            Bucket: this.bucketName,
-            Key: image,
-            Expires: 31536000 
-        };
         return "https://"+this.bucketName+".s3."+this.region+".amazonaws.com/"+image;
     }
 
