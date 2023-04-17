@@ -1,4 +1,5 @@
 import { Post } from "@nestjs/common";
+import { DateTime } from "aws-sdk/clients/devicefarm";
 import { Column, DataType, Table, Model, BelongsToMany, HasMany} from "sequelize-typescript";
 import { Chat } from "src/chats/chats.model";
 import { UserChats } from "src/chats/user-chat.model";
@@ -35,6 +36,12 @@ export class User extends Model<User, UserCreationAttrs>{
 
     @Column({type:DataType.STRING})
     url_img:string;
+
+    @Column({type:DataType.STRING})
+    status:string;
+
+    @Column({type:DataType.DATE})
+    last_active:DateTime; 
 
     @BelongsToMany(()=>Role,()=>UserRoles)
     roles: Role[];

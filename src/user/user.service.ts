@@ -71,7 +71,7 @@ export class UserService {
             model:File,
         }], });*/
         const user = await this.userRepository.findByPk(jwt_user.id);
-        user.url_img = await this.fileService.getFileURLByKey(user.url_img);
+        user.url_img = user.url_img? await this.fileService.getFileURLByKey(user.url_img):null;
         return user;
     }
     
