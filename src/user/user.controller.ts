@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -9,6 +9,7 @@ import { AddImageDto } from './dto/add-image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Headers } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ChangeUserDto } from './dto/change-user.dto';
 @ApiTags("Користувачі")
 @Controller('user')
 export class UserController {
@@ -72,6 +73,14 @@ export class UserController {
     @Get('/account')
     getMyAccount(@Headers() headers) {
       return this.userService.getMyAccount(headers);
+    }
+
+    @ApiBearerAuth()
+    @ApiOperation({summary:'Змінити дані користувача'})
+    @UseGuards(JwtAuthGuard)
+    @Put('/user')
+    changeUser(@Headers() headers,@Body() dto: ChangeUserDto){
+      return this.userService.changeUser(headers,dto);
     }
     
     @ApiBearerAuth()
