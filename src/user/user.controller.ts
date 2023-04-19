@@ -82,6 +82,14 @@ export class UserController {
     changeUser(@Headers() headers,@Body() dto: ChangeUserDto){
       return this.userService.changeUser(headers,dto);
     }
+
+    @ApiBearerAuth()
+    @ApiOperation({summary:'Взяти дані користувача'})
+    @UseGuards(JwtAuthGuard)
+    @Get("/galery")
+    getAllUserImage(@Headers() headers){
+      return this.userService.getUserImages(headers);
+    }
     
     @ApiBearerAuth()
     @ApiOperation({summary:'Взяти зображення по параметру key'})

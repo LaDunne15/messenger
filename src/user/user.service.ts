@@ -77,6 +77,27 @@ export class UserService {
     }
 
     
+    async getUserImages(headers: any) {
+        const authHeader = headers.authorization;
+        const token = authHeader.split(' ')[1];
+        const jwt_user = this.jwtService.verify(token);
+        const user = await this.userRepository.findByPk(jwt_user.id, { include: [{
+            model:File,
+        }], });
+        user.url_img = user.url_img? await this.fileService.getFileURLByKey(user.url_img):null;
+
+        const imgs = user.imgs.sort(function(a, b) {
+            return b.updatedAt-a.updatedAt;
+        });
+
+        imgs.forEach(async (i)=>{
+            i.url = await this.fileService.getFileURLByKey(i.url);
+        })
+
+        return imgs;
+    }
+
+    
     async changeUser(headers: any, dto: ChangeUserDto) {
         const authHeader = headers.authorization;
         const token = authHeader.split(' ')[1];
