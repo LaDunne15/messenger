@@ -90,6 +90,14 @@ export class UserController {
     getAllUserImage(@Headers() headers){
       return this.userService.getUserImages(headers);
     }
+
+    @ApiBearerAuth()
+    @ApiOperation({summary:'Взяти всіх користувачів'})
+    @UseGuards(JwtAuthGuard)
+    @Get("/people")
+    getPeople(@Headers() headers){
+      return this.userService.getPeople(headers);
+    }
     
     @ApiBearerAuth()
     @ApiOperation({summary:'Взяти зображення по параметру key'})

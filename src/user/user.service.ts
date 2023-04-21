@@ -9,6 +9,7 @@ import { FilesService } from 'src/files/files.service';
 import { File } from 'src/files/file.model';
 import { JwtService } from '@nestjs/jwt';
 import { ChangeUserDto } from './dto/change-user.dto';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class UserService {
@@ -32,6 +33,26 @@ export class UserService {
 
     async getAllUsers() {
         const users = await this.userRepository.findAll({include:{all:true}});
+        return users;
+    }
+
+    
+    async getPeople(headers: any) {
+        const authHeader = headers.authorization;
+        const token = authHeader.split(' ')[1];
+        const jwt_user = this.jwtService.verify(token);
+        
+        const users = await this.userRepository.findAll({
+            where: {
+              id: {
+                [Op.ne]: jwt_user.id // виключаємо користувача з id, яке зберігається у jwt токені
+              }
+        }});
+
+        users.forEach(async(i)=>{
+            i.url_img = i.url_img? await this.fileService.getFileURLByKey(i.url_img):null;
+        })
+
         return users;
     }
 
