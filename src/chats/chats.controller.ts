@@ -5,6 +5,7 @@ import { Headers } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateGroupChatDto } from './dto/create-group-chat.dto';
+import { CreateChatWithTextDto } from './dto/create-chat-with-text.dto';
 
 @ApiTags("Чати")
 @Controller('chats')
@@ -17,6 +18,14 @@ export class ChatsController {
     @Post('')
     createIndChat(@Headers() headers,@Body() dto: CreateChatDto) {
         return this.chatService.createChat(dto,headers);
+    }
+
+    @ApiBearerAuth()
+    @ApiOperation({summary:"Створення одинарного чату з текстом"})
+    @UseGuards(JwtAuthGuard)
+    @Post('/text')
+    createIndChatWithText(@Headers() headers,@Body() dto: CreateChatWithTextDto) {
+        return this.chatService.createChatWithText(dto,headers);
     }
 
     @ApiBearerAuth()

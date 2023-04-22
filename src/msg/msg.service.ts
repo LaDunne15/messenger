@@ -32,7 +32,6 @@ export class MsgService {
             userId: jwt_user.id,
         });
         
-        // Зберігаємо новий об'єкт повідомлення в базі даних
         return msg;
     }
 

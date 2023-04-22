@@ -8,6 +8,7 @@ import { UserChats } from './user-chat.model';
 import { Msg } from 'src/msg/msg.model';
 import { ImgMsg } from 'src/msg/img-msg.model';
 import { CreateGroupChatDto } from './dto/create-group-chat.dto';
+import { CreateChatWithTextDto } from './dto/create-chat-with-text.dto';
 
 @Injectable()
 export class ChatsService {
@@ -34,6 +35,30 @@ export class ChatsService {
 
         await chat.$add("users",[user.id])
         await chat.$add("users",[user2.id])
+        return chat;
+    }
+    
+    async createChatWithText(dto: CreateChatWithTextDto, headers: any) {
+        
+        const authHeader = headers.authorization;
+        const token = authHeader.split(' ')[1];
+
+        const jwt_user = this.jwtService.verify(token);
+        
+        const chat = await this.chatRepository.create(dto);
+
+        const user = await this.userRepository.findByPk(dto.userId);
+        const user2 = await this.userRepository.findByPk(jwt_user.id);
+
+        await chat.$add("users",[user.id]);
+        await chat.$add("users",[user2.id]);
+
+        await this.msgRepository.create({
+            userId: jwt_user.id,
+            chatId: chat.id,
+            text: dto.text
+        });
+
         return chat;
     }
 
