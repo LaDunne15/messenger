@@ -9,6 +9,8 @@ import { Msg } from 'src/msg/msg.model';
 import { ImgMsg } from 'src/msg/img-msg.model';
 import { CreateGroupChatDto } from './dto/create-group-chat.dto';
 import { CreateChatWithTextDto } from './dto/create-chat-with-text.dto';
+import { Op } from 'sequelize';
+import { FilesService } from 'src/files/files.service';
 
 @Injectable()
 export class ChatsService {
@@ -17,6 +19,7 @@ export class ChatsService {
         @InjectModel(Chat) private readonly chatRepository: typeof Chat,
         @InjectModel(User) private readonly userRepository: typeof User,
         @InjectModel(Msg) private readonly msgRepository: typeof Msg,
+        private fileService: FilesService,
         @InjectModel(UserChats) private readonly userChatsRepository: typeof UserChats,
         private jwtService: JwtService
     ){}
@@ -39,20 +42,47 @@ export class ChatsService {
     }
     
     async createChatWithText(dto: CreateChatWithTextDto, headers: any) {
-        
         const authHeader = headers.authorization;
         const token = authHeader.split(' ')[1];
-
         const jwt_user = this.jwtService.verify(token);
-        
-        const chat = await this.chatRepository.create(dto);
-
         const user = await this.userRepository.findByPk(dto.userId);
         const user2 = await this.userRepository.findByPk(jwt_user.id);
 
-        await chat.$add("users",[user.id]);
-        await chat.$add("users",[user2.id]);
+        const chats = await this.chatRepository.findAll({
+            include: {
+                model: User
+            },
+            where: {
+                type:'ind',
+            }
+        });
 
+        let filtered = [];
+
+        await chats.forEach((i)=>{
+            let s = 0;
+            i.users.forEach((j)=>{
+                if(j.id===user.id||j.id===user2.id)
+                {
+                    s++;
+                }
+            })
+            if(s==2){
+                filtered.push(i);
+            }
+        })
+
+        let chat;
+        if(filtered.length!==0)
+        {
+            chat = await this.chatRepository.findByPk(filtered[0].id)
+        }
+        else 
+        {
+            chat = await this.chatRepository.create(dto);
+            await chat.$add("users",[user.id]);
+            await chat.$add("users",[user2.id]);    
+        }
         await this.msgRepository.create({
             userId: jwt_user.id,
             chatId: chat.id,
@@ -87,10 +117,44 @@ export class ChatsService {
 
         const user = await this.userRepository.findOne({
             where: { id:jwt_user.id },
-            include: [Chat],
+            include: [{
+                model: Chat,
+                include: [
+                    {
+                        model: Msg
+                    },
+                    {
+                        model: User
+                    }
+                ]
+            }],
         });
 
-        return user.chats;
+        let chats = [];
+
+        await user.chats.forEach(async (chat) => {
+            chat.messages = await chat.messages.sort(function(a, b) {
+                return b.updatedAt-a.updatedAt;
+            });
+            const chJSON = JSON.stringify(chat);
+
+            const _chat = JSON.parse(chJSON);
+            _chat.last_text = chat.messages[0].text;
+            _chat.last_change = chat.messages[0].updatedAt;
+            _chat.isYouLastSender = chat.messages[0].userId===jwt_user.id;
+            let notMe = chat.users[0].id==jwt_user.id?chat.users[1]:chat.users[0];
+            _chat.img_url = await user.url_img ? await this.fileService.getFileURLByKey(notMe.url_img) : null;
+            _chat.user = notMe;
+            _chat.users = [];
+            _chat.messages = [];
+            chats.push(_chat);
+        })
+
+        await chats.sort(function(a, b) {
+                return a.last_change-b.last_change;
+        });
+
+        return chats;
     }
     
     async getChatById(headers: any, chatId: number) {

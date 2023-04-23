@@ -12,19 +12,20 @@ import { CreateChatWithTextDto } from './dto/create-chat-with-text.dto';
 export class ChatsController {
     constructor (private chatService: ChatsService){}
 
+    /*
     @ApiBearerAuth()
     @ApiOperation({summary:"Створення одинарного чату"})
     @UseGuards(JwtAuthGuard)
     @Post('')
     createIndChat(@Headers() headers,@Body() dto: CreateChatDto) {
         return this.chatService.createChat(dto,headers);
-    }
+    }*/
 
     @ApiBearerAuth()
     @ApiOperation({summary:"Створення одинарного чату з текстом"})
     @UseGuards(JwtAuthGuard)
     @Post('/text')
-    createIndChatWithText(@Headers() headers,@Body() dto: CreateChatWithTextDto) {
+    createIndChatWithText(@Headers() headers, @Body() dto: CreateChatWithTextDto) {
         return this.chatService.createChatWithText(dto,headers);
     }
 
@@ -35,7 +36,7 @@ export class ChatsController {
     createGrChat(@Headers() headers,@Body() dto: CreateGroupChatDto) {
         return this.chatService.createGroupChat(dto,headers);
     }
-
+ 
 
     @ApiBearerAuth()
     @ApiOperation({summary:"Виведення списку всіх чатів"})
